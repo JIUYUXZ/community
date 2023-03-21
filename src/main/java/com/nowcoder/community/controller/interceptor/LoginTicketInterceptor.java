@@ -6,6 +6,10 @@ import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CookieUtil;
 import com.nowcoder.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,11 +41,16 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 User user = userService.findUserById(loginTicket.getUserId());
                 // 在本次请求中持有用户
                 hostHolder.setUser(user);
+                // 构建用户认证的结果，并存入SecurityContext，以便于Security进行授权
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        user, user.getPassword(), userService.getAuthorities(user.getId()));
+                SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
             }
         }
         return true;
     }
 
+    // 之前preHandle存的user应该在模板引擎之中用，所以在拦截器的postHandle方法中将user存到model里
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         User user = hostHolder.getUser();
@@ -50,8 +59,11 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
         }
     }
 
+    // 此方法在模板引擎之后执行，在整个请求结束之后
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         hostHolder.clear();
+        // 执行某部分功能时，由于springboot 版本原因出现bug,需要注释此代码
+        //SecurityContextHolder.clearContext(); // 请求之后清理掉数据
     }
 }
