@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface DiscussPostMapper {
 
-    List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit);
+    List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit, int orderMode); // orderMode默认0按时间排，1则按热度排
 
     // @Param注解用于给参数取别名,
     // 如果只有一个参数,并且在<if>里使用,则必须加别名.
@@ -37,5 +37,8 @@ public interface DiscussPostMapper {
 
     // 修改帖子状态
     int updateStatus(int id, int status);
+
+    // 更新帖子分数
+    int updateScore(int id, double score);
 
 }
