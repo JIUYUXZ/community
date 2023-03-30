@@ -26,7 +26,7 @@ import java.util.Date;
 @Service
 public class AlphaService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AlphaService.class);
+    // private static final Logger logger = LoggerFactory.getLogger(AlphaService.class);
 
     @Autowired
     private AlphaDao alphaDao;
@@ -121,13 +121,13 @@ public class AlphaService {
     }
 
     // 让该方法在多线程的环境下被异步调用
-    @Async
+   /* @Async
     public void execute1() {
         logger.debug("execute1");
     }
 
-    /*@Scheduled(initialDelay = 10000, fixedRate = 1000)*/
+    *//*@Scheduled(initialDelay = 10000, fixedRate = 1000)*//*
     public void execute2() {
         logger.debug("execute2");
-    }
+    }*/
 }
